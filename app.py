@@ -1,13 +1,13 @@
 import streamlit as st
 import pandas as pd
-
+from filters import date_filter,filter_selected_options
+from superstort_sales_dashboard import get_form_options
 # Set the page configuration
 st.set_page_config(layout="wide")
-df = pd.read_csv("data/Food_and_Nutrition__.csv")
-st.write("original data shape: ",df.shape)
+# df = pd.read_csv("data/Food_and_Nutrition__.csv")
+df = pd.read_csv("data/train.csv")
 
-dietary_preference = ["Omnivore","Vegetarian","Vegan","Pescatarian"]
-activity_level = ["Moderately Active","Lightly Active","Sedentary","Very Active""Extremely Active"]
+st.write("original data shape: ",df.shape)
 
 # Function to reset the form inputs
 def reset_form():
@@ -15,9 +15,9 @@ def reset_form():
     st.write(current_data.shape)
 
 def supmitted():
-    current_data = df.copy()
-    current_data = current_data[(current_data["Activity Level"].isin(form_activity_level))&(current_data["Dietary Preference"].isin(form_dietary_preference))]
-    st.write(current_data.shape)
+    st.write(form_options)
+    st.write(filter_selected_options(form_options))
+
 # Create two columns with a 1:4 ratio
 col1, col2 = st.columns([1, 4])
 
@@ -26,9 +26,7 @@ with col1:
     st.header("Filters")
     with st.form("user_form"):
         # Form fields
-        form_activity_level = st.multiselect("Activity Level",activity_level , default=None)
-        form_dietary_preference = st.multiselect("Dietary Preference",dietary_preference , default=None)
-
+        form_options = get_form_options()
         # Buttons
         submitted = st.form_submit_button("Submit")
         reset = st.form_submit_button("Reset")
