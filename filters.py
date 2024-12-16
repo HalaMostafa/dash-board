@@ -2,7 +2,7 @@ import pandas as pd
 import datetime
 
 
-def date_filter(df,col_name:str,options:dict):
+def date_filter(df, col_name: str, options: dict):
     """filter dataframe based period of time
     Args:
         df: 
