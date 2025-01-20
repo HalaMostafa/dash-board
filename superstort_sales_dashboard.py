@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from layout import figure_defaults
+from filters import date_filter
+
+
+df = pd.read_csv("data/train.csv")
 
 
 def get_form_options():
@@ -34,7 +38,15 @@ def get_form_options():
     }
 
 
-df = pd.read_csv("data/train.csv")
+def filter_data(df, form_options: dict):
+    if "ship_mode" in form_options:
+        df = df[df["Ship Mode"].isin(form_options["ship_mode"])]
+    if "segment" in form_options:
+        df = df[df["Segment"].isin(form_options["segment"])]
+    if "category" in form_options:
+        df = df[df["Category"].isin(form_options["category"])]
+    df = date_filter(df, col_name="Order Date", form_options=form_options)
+    return df
 
 
 @figure_defaults()
@@ -85,16 +97,10 @@ def create_figure(df, options):
                            columns=['Category'], aggfunc="mean")
 
     data = []
-    for col in table.columns:
-        data.append(
-            go.Bar(
-                x=table.index,
-                y=table[col],
-                name=col
-            )
-        )
-    fig = go.Figure(data)
-    return fig
+    data.extend(
+        go.Bar(x=table.index, y=table[col], name=col) for col in table.columns
+    )
+    return go.Figure(data)
 
 
 avg_sales_category = create_figure(
